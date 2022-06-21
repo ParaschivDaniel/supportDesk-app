@@ -3,13 +3,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/userModel');
+
 // @desc    Register a new user
 // @route   /api/users
 // @access  Public
-const registerUser = asyncHandler(async (res, req) => {
+const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password } = req.body;
 
-	//Validation
+	// Validation
 	if (!name || !email || !password) {
 		res.status(400);
 		throw new Error('Please include all fields');
@@ -23,7 +24,7 @@ const registerUser = asyncHandler(async (res, req) => {
 		throw new Error('User already exists');
 	}
 
-	//Hash password
+	// Hash password
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -43,19 +44,19 @@ const registerUser = asyncHandler(async (res, req) => {
 		});
 	} else {
 		res.status(400);
-		throw new Error('Invalid user data');
+		throw new error('Invalid user data');
 	}
 });
 
 // @desc    Login a user
-// @route   /api/login
+// @route   /api/users/login
 // @access  Public
-const loginUser = asyncHandler(async (res, req) => {
+const loginUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
 
 	const user = await User.findOne({ email });
 
-	//Check user and passwords match
+	// Check user and passwords match
 	if (user && (await bcrypt.compare(password, user.password))) {
 		res.status(200).json({
 			_id: user._id,
@@ -72,7 +73,7 @@ const loginUser = asyncHandler(async (res, req) => {
 // @desc    Get current user
 // @route   /api/users/me
 // @access  Private
-const getMe = asyncHandler(async (res, req) => {
+const getMe = asyncHandler(async (req, res) => {
 	const user = {
 		id: req.user._id,
 		email: req.user.email,
@@ -81,9 +82,11 @@ const getMe = asyncHandler(async (res, req) => {
 	res.status(200).json(user);
 });
 
-//Generate Token
+// Generate token
 const generateToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+	return jwt.sign({ id }, process.env.JWT_SECRET, {
+		expiresIn: '30d',
+	});
 };
 
 module.exports = {
