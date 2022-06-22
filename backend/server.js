@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 app.get('/', (req, res) => {
 	res.status(200).json({ message: 'Welcome to the Support Desk API' });
